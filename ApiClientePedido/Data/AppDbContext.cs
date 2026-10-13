@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ApiClientePedido.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiClientePedido.Data
 {
@@ -8,5 +9,9 @@ namespace ApiClientePedido.Data
         {
             
         }
+
+        public DbSet<Cliente> Clientes { get; set; }
+
+        public DbSet<Pedido> Pedidos { get; set; }
     }
 }

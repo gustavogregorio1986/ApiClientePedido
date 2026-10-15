@@ -1,37 +1,42 @@
-﻿using ApiClientePedido.Models;
+﻿using ApiClientePedido.Data;
+using ApiClientePedido.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiClientePedido.Repositories
 {
     public class ClienteRepository : IClienteRepository
     {
-        public Task AddAsync(Cliente cliente)
+        private readonly AppDbContext _context;
+
+        public ClienteRepository(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Cliente>> GetAllAsync() 
+            =>  await _context.Clientes.Include(p => p.Pedidos).ToListAsync();
+
+        public async Task<Cliente> GetByIdAsync(int id)
+            => await _context.Clientes
+               .Include(p => p.Pedidos)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        public async Task AddAsync(Cliente cliente)
+          => await _context.Clientes.AddAsync(cliente);
+
+        public Task UpdateAsync(Cliente cliente)
+        {
+           _context.Clientes.Update(cliente);
+            return Task.CompletedTask;
         }
 
         public Task DeleteAsync(Cliente cliente)
         {
-            throw new NotImplementedException();
+            _context.Clientes.Remove(cliente);
+            return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<Cliente>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Cliente> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> SaveAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(Cliente cliente)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<bool> SaveAsync() 
+            => await _context.SaveChangesAsync() > 0;
     }
 }
